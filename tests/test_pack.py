@@ -90,6 +90,17 @@ class PackTests(unittest.TestCase):
             'z.href="image/png";w.src="o,location.href";fetch("/api/data");q.src="real.png"')
         self.assertEqual(self.missing(), {('/api/data', 'not-found'), ('real.png', 'not-found')})
 
+    def test_urls_in_comments_are_counted_not_listed(self):
+        (self.web / 'main.js').write_text(
+            '// see https://example.org/docs and http://example.net/paper.pdf\n'
+            '/* https://example.org/more */ const u = "https://api.example.com/v1"; el.src=\'https://cdn.example.com/a.js\''
+        )
+        (self.web / 'index.html').write_text('<link href="https://fonts.example.com/css"><style>a{background:url(https://img.example.com/x.png)}</style>')
+        result = pack.audit(self.web)
+        self.assertEqual(result['candidate_remote_urls'], ['https://api.example.com/v1', 'https://cdn.example.com/a.js',
+                                                           'https://fonts.example.com/css', 'https://img.example.com/x.png'])
+        self.assertEqual(result['urls_only_mentioned'], {'main.js': 3})
+
     def test_rejects_invalid_names(self):
         for name in ['', ' ', 'a/b', 'a\\b', 'a: b', 'a"b', ' padded', 'dot.', 'x' * 101, 'a\nb']:
             with self.assertRaises(ValueError, msg=repr(name)):

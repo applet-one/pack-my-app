@@ -40,6 +40,8 @@ Traps:
 
 - Code run through `Runtime.evaluate` is exempt from the CSP's `eval` block, including scripts it injects synchronously. To test `eval`, schedule it with `setTimeout` and read the result in a later call.
 - Wait for the page target before evaluating; an immediate call can run before the document exists.
+- Launch the app in its own command, separate from the script that drives it. If both share one command and the script fails, the app is killed with it and looks like a crash. If an instance does vanish, relaunch and check `~/Library/Logs/DiagnosticReports` before calling it a crash.
+- Some apps reload their own page during start-up. A call in flight when that happens never returns. Let the page settle for a few seconds, and avoid forcing `Page.reload` on such an app; read `performance.getEntriesByType('resource')` for the requests made so far instead.
 - `queryLocalFonts` and some other APIs reject while the window is not visible. That is the test setup, not the app.
 - To test a long timer, shift `Date.now` in the page rather than waiting. Say so in the report.
 - A save dialog cannot be dismissed over the protocol. Either observe the generated file by wrapping `HTMLAnchorElement.prototype.click`, or leave the dialog step for the user; report which.

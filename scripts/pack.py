@@ -67,7 +67,7 @@ def audit(root):
     root = root.resolve(strict=True)
     if not root.is_dir():
         raise ValueError('Web root must be a directory')
-    entries, urls, missing, indicators = [], set(), [], []
+    entries, urls, missing, indicators, mentions = [], set(), [], [], {}
     for p in files(root):
         data = p.read_bytes()
         rel = p.relative_to(root).as_posix()
@@ -75,7 +75,15 @@ def audit(root):
         if p.suffix.lower() not in TEXT:
             continue
         text = data.decode('utf-8', errors='replace')
-        urls.update(public_url(m.group()) for m in URLS.finditer(text) if not NAMESPACE.match(m.group()))
+        for m in URLS.finditer(text):
+            if NAMESPACE.match(m.group()):
+                continue
+            # A URL the code can load sits in a string, attribute or url(); one in a
+            # comment or prose follows a space. Count the latter instead of listing it.
+            if m.start() and text[m.start() - 1] in '\'"`(=':
+                urls.add(public_url(m.group()))
+            else:
+                mentions[rel] = mentions.get(rel, 0) + 1
         for category, pattern in MARKERS.items():
             hits = list(re.finditer(pattern, text))
             if hits:
@@ -113,6 +121,7 @@ def audit(root):
                     check(part.split()[0])
     return {'warning': 'Advisory static scan only; not a parser or offline verification. URLs omit credentials, queries and fragments; URL paths may still be sensitive.',
             'files': entries, 'candidate_remote_urls': sorted(urls),
+            'urls_only_mentioned': mentions,
             'missing_literal_resources': missing, 'indicators': indicators}
 
 

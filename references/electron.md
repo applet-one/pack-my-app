@@ -20,6 +20,7 @@ Add only the rows the app's code actually uses, in the generated project's `main
 | Copies or pastes images or text via the async API | `navigator.clipboard.` | `clipboard-read`, `clipboard-sanitized-write` permissions |
 | Lists installed fonts | `queryLocalFonts` | `local-fonts` permission |
 | Shows notifications | `Notification` | `notifications` permission |
+| Has a full-screen button | `requestFullscreen` | `fullscreen` permission |
 | Fetches a `blob:` or `data:` URL | `fetch(` on object URLs | `blob:` / `data:` in CSP `connect-src` |
 
 Workers created from `blob:` URLs, object-URL downloads through `<a download>`, `<input type=file>`, IndexedDB and localStorage need nothing. An `<a download>` click opens Electron's save dialog.
