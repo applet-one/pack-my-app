@@ -2,6 +2,8 @@
 
 An agent skill that turns apps built with Claude into independent Electron desktop apps.
 
+See Claude's [Install as app guide](https://claude.com/resources/articles/install-as-app) for background.
+
 Point it at an installed Claude app, for example `~/Applications/Claude Apps/Focus.app`. The skill recognises that the bundle is only a launcher, fetches the app's real source from its artifact, adapts it to run without Claude, builds it, and puts `Focus-Packed.app` next to the original. The original is never modified.
 
 It also works on other web apps (a URL or a build directory), but Claude-built apps are the primary purpose.
