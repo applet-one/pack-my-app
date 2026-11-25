@@ -20,7 +20,13 @@ It also works on other web apps (a URL or a build directory), but Claude-built a
 
 ## Use
 
-Install this directory as a skill in your agent, then ask, for example:
+Install this directory as a skill in your agent
+
+```text
+Download and install this skill https://github.com/applet-one/pack-my-app
+```
+
+ then ask, for example:
 
 ```text
 Pack this app: ~/Applications/Claude Apps/Focus.app
